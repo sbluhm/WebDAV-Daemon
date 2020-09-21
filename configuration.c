@@ -269,6 +269,24 @@ static int configResponseDir(WebdavdConfiguration * config, xmlTextReaderPtr rea
 	return result;
 }
 
+//<add-header name="Access-Control-Allow-Headers">cache-control</add-header>
+static int configAddHeader(WebdavdConfiguration * config, xmlTextReaderPtr reader, const char * configFile) {
+	// keep track of the number of headers
+	int index = config->addHeadersCount++;
+
+	// increase the size of the config-->addHeaders memory area
+	config->addHeaders = reallocSafe(config->addHeaders, sizeof(*config->addHeaders) * config->addHeadersCount);
+	memset(&config->addHeaders[index], 0, sizeof(config->addHeaders[index]));
+
+	// add the values to the configurations
+	config->addHeaders[index].name = xmlTextReaderGetAttribute(reader, "name");
+	int result = readConfigString(reader, &config->addHeaders[index].value);
+
+//stdLogError(errno, "Custom Header (%i) - %s: %s ---------", index, config->addHeaders[index].name, config->addHeaders[index].value );
+
+	return result;
+}
+
 ///////////////////////////
 // End Handler Functions //
 ///////////////////////////
@@ -290,6 +308,7 @@ static int compareConfigFunction(const void * a, const void * b) {
 // This MUST be sorted in aplabetical order (for nodeName).  The array is binary-searched.
 static const ConfigurationFunction configFunctions[] = {
 		{ .nodeName = "access-log", .func = &configAccessLog },                // <access-log />
+		{ .nodeName = "add-header", .func = &configAddHeader },                // <add-header />
 		{ .nodeName = "chroot-path", .func = &configChroot },                  // <chroot />
 		{ .nodeName = "error-log", .func = &configErrorLog },                  // <error-log />
 		{ .nodeName = "listen", .func = &configListen },                       // <listen />
