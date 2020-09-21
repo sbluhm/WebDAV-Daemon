@@ -271,11 +271,20 @@ static int configResponseDir(WebdavdConfiguration * config, xmlTextReaderPtr rea
 
 //<add-header name="Access-Control-Allow-Headers">cache-control</add-header>
 static int configAddHeader(WebdavdConfiguration * config, xmlTextReaderPtr reader, const char * configFile) {
+	// keep track of the number of headers
 	int index = config->addHeadersCount++;
+
+	// increase the size of the config-->addHeaders memory area
 	config->addHeaders = reallocSafe(config->addHeaders, sizeof(*config->addHeaders) * config->addHeadersCount);
+	memset(&config->addHeaders[index], 0, sizeof(config->addHeaders[index]));
+
+	// add the values to the configurations
 	config->addHeaders[index].name = xmlTextReaderGetAttribute(reader, "name");
-	config->addHeaders[index].value =  xmlTextReaderReadString(reader);
-	return stepOver(reader);
+	int result = readConfigString(reader, &config->addHeaders[index].value);
+
+//stdLogError(errno, "Custom Header (%i) - %s: %s ---------", index, config->addHeaders[index].name, config->addHeaders[index].value );
+
+	return result;
 }
 
 ///////////////////////////
