@@ -57,9 +57,13 @@ typedef struct WebdavdConfiguration {
 	int sslCertCount;
 	SSLConfig * sslCerts;
 
+	// OPTIONS Requests
+	int unprotectOptions;
+
 	// Additional Headers
 	int addHeadersCount;
 	AddHeaders * addHeaders;
+
 } WebdavdConfiguration;
 
 extern WebdavdConfiguration config;
