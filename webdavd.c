@@ -1219,10 +1219,10 @@ static Response * createFdResponse(int fd, uint64_t offset, uint64_t size, const
 
 	// Adding additional headers from the config file
 //	printf("Stefan test");
-//        for (int i = 0; i < config.addHeadersCount; i++) {
-//		addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value);
-//		printf("Addditional headers name: %s value: %s", config.addHeaders[i].name, config.addHeaders[i].value);
-//        }
+        for (int i = 0; i < config.addHeadersCount; i++) {
+		addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value);
+		printf("Addditional headers name: %s value: %s", config.addHeaders[i].name, config.addHeaders[i].value);
+        }
 
 	return response;
 }
@@ -1596,7 +1596,9 @@ static int sendResponse(Request * request, int statusCode, Response * response, 
 	if (response) {
 	        // Adding additional headers from the config file
         	for (int i = 0; i < config.addHeadersCount; i++) {
-                	addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value);
+
+                stdLogError(errno, "Added header i: %d", i);
+			addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value);
         	}
 		int queueResult = MHD_queue_response(request, statusCode, response);
 		MHD_destroy_response(response);
@@ -1634,9 +1636,9 @@ static int sendResponse(Request * request, int statusCode, Response * response, 
 		 * It's counter-intuitive to put it here, but it works and I havn't found a better place to put it. */
 		unuseSessionLocks(rapSession);
                 // Adding additional headers from the config file
-                for (int i = 0; i < config.addHeadersCount; i++) {
-                        addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value); 
-                }
+//                for (int i = 0; i < config.addHeadersCount; i++) {
+//                        addHeader(response, config.addHeaders[i].name, config.addHeaders[i].value); 
+//                }
 
 		return MHD_queue_response(request, statusCode, response);
 	}
